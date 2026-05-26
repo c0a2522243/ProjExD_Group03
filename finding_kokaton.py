@@ -110,6 +110,11 @@ def main():
     # 基本機能：9種類の鳥を生成してグループに登録
     birds = pg.sprite.Group()
     img_nums = list(range(10)) 
+    random.shuffle(img_nums)  # 画像をランダムに
+    mode = "PLAYING"  # 最初はプレイ中モード
+    clear_timer = 0  # クリア画面の表示時間
+    stage_count = 1   # 何問目かのカウント
+    img_nums = list(range(10)) 
     random.shuffle(img_nums) # 画像をランダムに
     # ★ スタート画面を表示 ★
     Start(screen)
@@ -124,10 +129,8 @@ def main():
     for i in range(9):
         bird = Bird(img_nums[i], positions[i])
         birds.add(bird)
-    for i in range(9):
-        bird = Bird(img_nums[i], positions[i])
-        birds.add(bird)
         
+
     # 基本機能：ターゲット（正解）を1つ決める
     target_bird = random.choice(birds.sprites())
     target_img = pg.transform.rotozoom(pg.image.load(f"fig/{target_bird.bird_id}.png"), 0, 1.0)
