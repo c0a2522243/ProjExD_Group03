@@ -33,6 +33,17 @@ class Bird(pg.sprite.Sprite):
         if self.rect.left < 0 or self.rect.right > WIDTH:
             self.vx *= -1  # 画面の左右の端に触れたら速度を反転
         if self.rect.top < 0 or self.rect.bottom > HEIGHT:
+            self.vy *= -1
+
+class BGM():
+    """
+    BGMを流す関数。
+    """
+    def __init__(self):
+        pg.mixer.init()
+        pg.mixer.music.load("sound/house_lo.wav")
+        pg.mixer.music.play(-1)
+                
             self.vy *= -1  # 画面の上下の端に触れたら速度を反転
             
 
@@ -89,6 +100,8 @@ def main():
 
     bg_img = pg.image.load("fig/pg_bg.jpg")
 
+    BGM()
+    # 基本機能：9種類の鳥を生成してグループに登録
     # フォント
     font = pg.font.Font(None, 50)
     big_font = pg.font.Font(None, 100)
