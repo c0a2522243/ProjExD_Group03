@@ -1,9 +1,7 @@
 import os
 import sys
 import random
-
 import pygame as pg
-
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # 画面サイズ
@@ -22,14 +20,12 @@ class Bird(pg.sprite.Sprite):
         引数2 xy：配置座標
         """
         super().__init__()
-
+        # figフォルダ内の0.png~9.pngを読み込む
         img = pg.image.load(f"fig/{num}.png")
-        self.image = pg.transform.rotozoom(img, 0, 2.0)
+        self.image = pg.transform.rotozoom(img, 0, 1.0)
         self.rect = self.image.get_rect()
         self.rect.center = xy
-
-        # 正誤判定用ID
-        self.bird_id = num
+        self.bird_id = num  # 正誤判定用の画像番号
 
         # 移動速度
         self.vx = random.choice([-3, -2, 2, 3])
@@ -40,14 +36,29 @@ class Bird(pg.sprite.Sprite):
         こうかとんを移動させる
         """
         self.rect.move_ip(self.vx, self.vy)
-
-        # 横方向反射
+        
+        # 画面端判定
         if self.rect.left < 0 or self.rect.right > WIDTH:
-            self.vx *= -1
-
-        # 縦方向反射
+            self.vx *= -1  # 画面の左右の端に触れたら速度を反転
         if self.rect.top < 0 or self.rect.bottom > HEIGHT:
-            self.vy *= -1
+            self.vy *= -1  # 画面の上下の端に触れたら速度を反転
+            
+
+def reset_stage(birds: pg.sprite.Group):
+    """
+    担当機能：既存のこうかとんたちを消して、新しい配置とターゲットを生成する
+    """
+    birds.empty()  # 今いるこうかとんを全消去
+
+    img_nums = [random.randint(0, 9) for _ in range(9)]  # 新しいステージ用の画像番号のリストを作る
+
+    for i in range(9):
+        x = random.randint(100, WIDTH - 100)
+        y = random.randint(100, HEIGHT - 100)
+        bird = Bird(img_nums[i], (x, y))
+        birds.add(bird)  # こうかとんをランダムな位置に再配置
+    
+    return random.choice(birds.sprites())  # 新しいターゲットを決めて返す
 
 
 def main():
@@ -88,6 +99,20 @@ def main():
         0,
         1.0
     )
+    # 基本機能：9種類の鳥を生成してグループに登録
+    birds = pg.sprite.Group()
+    target_bird = reset_stage(birds)  # 初回ステージ生成
+
+    img_nums = list(range(10)) 
+    random.shuffle(img_nums)  # 画像をランダムに
+    mode = "PLAYING"  # 最初はプレイ中モード
+    clear_timer = 0  # クリア画面の表示時間
+    stage_count = 1   # 何問目かのカウント
+
+    # 基本機能：ターゲット（正解）を1つ決める
+    target_bird = random.choice(birds.sprites())
+    target_img = pg.transform.rotozoom(pg.image.load(f"fig/{target_bird.bird_id}.png"), 0, 1.0)
+    clock = pg.time.Clock()
 
     # 制限時間
     time_limit = 30
@@ -97,7 +122,7 @@ def main():
     game_clear = False
     time_up = False
 
-    clock = pg.time.Clock()
+    # clock = pg.time.Clock()
 
     while True:
 
@@ -140,6 +165,27 @@ def main():
         # 背景
         screen.blit(bg_img, (0, 0))
 
+        if mode == "PLAYING":  # プレイ中の更新処理
+            birds.update()
+            birds.draw(screen)  # すべてのこうかとんを描画
+            target_img = pg.transform.rotozoom(pg.image.load(f"fig/{target_bird.bird_id}.png"), 10, 1.5)  # ターゲットの見本を左上に表示
+            screen.blit(target_img, [10, 10])
+            pg.draw.rect(screen, (255, 0, 0), [5, 5, 120, 120], 3) # # 正解のこうかとんを囲む赤い枠線
+
+        elif mode == "CLEAR":  # クリア画面の演出
+            txt = font.render(f"STAGE {stage_count} CLEAR!!", True, [255, 0, 0])
+            screen.blit(txt, [WIDTH//2 - 250, HEIGHT//2 - 50])  # 画面中央に現在のステージクリアを表示
+            
+            clear_timer -= 1 # タイマーを減らす
+            
+            # タイマーが0になったらリセットして次の問題へ
+            if clear_timer <= 0:
+                stage_count += 1
+                target_bird = reset_stage(birds) # ステージ再構築
+                mode = "PLAYING" # ゲーム再開
+        
+        pg.display.update()
+
         # ターゲット画像
         screen.blit(target_img, (10, 10))
 
@@ -175,13 +221,13 @@ def main():
             )
             screen.blit(time_text, (150, 250))
 
-        # 画面更新
-        pg.display.update()
+     
 
-        # 3秒後終了
-        if game_clear or time_up:
-            pg.time.wait(3000)
-            return
+
+        # # 3秒後終了
+        # if game_clear or time_up:
+        #     pg.time.wait(3000)
+        #     return
 
         clock.tick(60)
 
