@@ -92,6 +92,64 @@ def reset_stage(birds: pg.sprite.Group):
     
     return target_bird, target_img  # 新しいターゲットを決めて返す
 
+def Start(screen):
+
+    """
+    スタート画面を表示する
+    """ 
+    font_nihongo = "C:/Windows/Fonts/msgothic.ttc"
+    font_title = pg.font.Font(font_nihongo, 60)
+    font_msg = pg.font.Font(font_nihongo, 40)
+
+    while True:
+        screen.fill((0, 0, 0))
+
+        title = font_title.render("正しいこうかとんを探せ！！", True, (255, 255, 0))
+        msg = font_msg.render("Enterキーでスタート", True, (200, 200, 200))
+
+        screen.blit(title, (WIDTH//2 - title.get_width()//2, 200))
+        screen.blit(msg, (WIDTH//2 - msg.get_width()//2, 400))
+
+        pg.display.update()
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                return
+
+def Result(screen, count):
+    """
+    ゲームオーバー時のリザルト画面を表示する
+    """
+    font_nihongo = "C:/Windows/Fonts/msgothic.ttc"
+    font_big = pg.font.Font(font_nihongo, 80)
+    font_small = pg.font.Font(font_nihongo, 30)
+
+    screen.fill((0, 0, 0))
+
+    result_text = font_big.render("GAME OVER", True, (255, 0, 0))
+    screen.blit(result_text, (WIDTH//2 - result_text.get_width()//2, 150))
+
+    count_text = font_small.render(f"クリアしたステージ数：{count}", True, (255, 255, 255))
+    screen.blit(count_text, (WIDTH//2 - count_text.get_width()//2, 300))
+
+    msg_text = font_small.render("Enterキーで終了", True, (200, 200, 200))
+    screen.blit(msg_text, (WIDTH//2 - msg_text.get_width()//2, 450))
+
+    pg.display.update()
+
+    # Enterキーが押されるまで待機
+    waiting = True
+    while waiting:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.KEYDOWN and event.key == pg.K_RETURN:
+                waiting = False
+
 def main():
 
     pg.display.set_caption("正しいこうかとんを探せ！！")
