@@ -158,6 +158,9 @@ def main():
 
     bg_img = pg.image.load("fig/pg_bg.jpg")
 
+    Start(screen)  #スタート画面を表示
+    
+
     BGM()
     # 基本機能：9種類の鳥を生成してグループに登録
     # フォント
@@ -316,6 +319,7 @@ def main():
         if time_up:
 
             pg.time.wait(3000)
+            Result(screen, clear_count)
 
             return
         
