@@ -33,7 +33,7 @@ class Bird(pg.sprite.Sprite):
         if self.rect.left < 0 or self.rect.right > WIDTH:
             self.vx *= -1  # 画面の左右の端に触れたら速度を反転
         if self.rect.top < 0 or self.rect.bottom > HEIGHT:
-            self.vy *= -1
+            self.vy *= -1  # 画面の上下の端に触れたら速度を反転
 
 class BGM():
     """
@@ -43,8 +43,6 @@ class BGM():
         pg.mixer.init()
         pg.mixer.music.load("sound/house_lo.wav")
         pg.mixer.music.play(-1)
-                
-            self.vy *= -1  # 画面の上下の端に触れたら速度を反転
             
 
 def reset_stage(birds: pg.sprite.Group):
