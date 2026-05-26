@@ -2,7 +2,6 @@ import os
 import sys
 import random
 import pygame as pg
-
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # 画面サイズ
@@ -42,6 +41,7 @@ class Bird(pg.sprite.Sprite):
             self.vx *= -1  # 画面の左右の端に触れたら速度を反転
         if self.rect.top < 0 or self.rect.bottom > HEIGHT:
             self.vy *= -1  # 画面の上下の端に触れたら速度を反転
+            
 
 def reset_stage(birds: pg.sprite.Group):
     """
@@ -64,14 +64,14 @@ def main():
     pg.display.set_caption("正しいこうかとんを探せ！！")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")
-    font = pg.font.Font(None, 100) # クリア文字用
+    font = pg.font.Font(None, 100)  # クリア文字用
 
     # 基本機能：9種類の鳥を生成してグループに登録
     birds = pg.sprite.Group()
     target_bird = reset_stage(birds)  # 初回ステージ生成
 
     img_nums = list(range(10)) 
-    random.shuffle(img_nums) # 画像をランダムに
+    random.shuffle(img_nums)  # 画像をランダムに
     mode = "PLAYING"  # 最初はプレイ中モード
     clear_timer = 0  # クリア画面の表示時間
     stage_count = 1   # 何問目かのカウント
@@ -101,8 +101,8 @@ def main():
             birds.update()
             birds.draw(screen)  # すべてのこうかとんを描画
             target_img = pg.transform.rotozoom(pg.image.load(f"fig/{target_bird.bird_id}.png"), 10, 1.5)  # ターゲットの見本を左上に表示
-            screen.blit(target_img, [0, 0])
-            pg.draw.rect(screen, (255, 0, 0), [5, 5, 110, 110], 3) # # 正解のこうかとんを囲む赤い枠線
+            screen.blit(target_img, [10, 10])
+            pg.draw.rect(screen, (255, 0, 0), [5, 5, 120, 120], 3) # # 正解のこうかとんを囲む赤い枠線
 
         elif mode == "CLEAR":  # クリア画面の演出
             txt = font.render(f"STAGE {stage_count} CLEAR!!", True, [255, 0, 0])
